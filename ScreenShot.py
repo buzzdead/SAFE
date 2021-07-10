@@ -1,11 +1,13 @@
-import sys
+import RSA
 
 import pyWinhook
 import pythoncom
+import win32api
 import win32con
 import win32gui
 import win32ui
 
+coords = []
 
 def saveScreenShot(x, y, width, height, path):
     # grab a handle to the main desktop window
@@ -45,15 +47,13 @@ def onMouseDown(event):
 
 
 def onMouseUp(event):
-    # Here, the beginning of your rectangle drawing
-    # [...]
 
-    # Subscribe the event to the callback
     print(event.Position)
     hdc = win32gui.GetWindowDC(0)
     x, y = coords[0]
     dx, dy = event.Position
 
+    # In the case of inverting the rectangle
     if dx < x:
         tmp_x = x
         x = dx
@@ -65,15 +65,17 @@ def onMouseUp(event):
 
     #win32gui.DrawFocusRect(hdc, (x, y, dx, dy))
     #win32gui.DeleteDC(hdc)
+
+    # Subscribe the event to the callback
     saveScreenShot(x, y, dx - x, dy - y, "saved.png")
-    sys.exit()
+    win32api.PostQuitMessage()
+    return 0
 
 
-if __name__ == '__main__':
-    coords = []
-    hdc = win32gui.GetWindowDC(0)
+def activateScreenShot():
+    #hdc = win32gui.GetWindowDC(0)
     hm = pyWinhook.HookManager()
     hm.MouseLeftDown = onMouseDown
     hm.MouseLeftUp = onMouseUp
     hm.HookMouse()
-    pythoncom.PumpMessages()
+    pythoncom.PumpMessages(0)
