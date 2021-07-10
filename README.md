@@ -6,3 +6,5 @@ Screen and file encryption
 
 - The plan is to make this program viable for easy-to-get secure passwords, or
   just encrypting files in general.
+  
+- Ultimately enable the program to be able to encrypt files that are decrypted by another user. (PKC)
