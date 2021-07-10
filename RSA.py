@@ -43,9 +43,8 @@ def rsa_encrypt(blob, public_key, extension):
 
     # Base 64 encode the encrypted file
     encrypted += b"\x00\x00\x00\x00"
-    dd = rsa_key.encrypt(b"extension=" + extension.encode('utf-8'))
-    print(dd)
-    encrypted += dd
+    ext = rsa_key.encrypt(b"extension=" + extension.encode('utf-8'))
+    encrypted += ext
     return base64.b64encode(encrypted)
 
 
@@ -60,7 +59,6 @@ def rsa_decrypt(encrypted_blob, private_key, passphrase):
     ext = encrypted_blob[index + 4:]
     file_extension = rsakey.decrypt(ext)[-3:].decode("utf-8")
     encrypted_blob = encrypted_blob[0:index]
-    print(ext)
 
     # In determining the chunk size, determine the private key length used in bytes.
     # The data will be in decrypted in chunks

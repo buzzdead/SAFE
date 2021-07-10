@@ -1,5 +1,3 @@
-import RSA
-
 import pyWinhook
 import pythoncom
 import win32api
@@ -8,6 +6,7 @@ import win32gui
 import win32ui
 
 coords = []
+
 
 def saveScreenShot(x, y, width, height, path):
     # grab a handle to the main desktop window
@@ -68,9 +67,8 @@ def onMouseUp(event):
 
     # Subscribe the event to the callback
     saveScreenShot(x, y, dx - x, dy - y, "saved.png")
-    win32api.PostQuitMessage()
+    win32api.PostQuitMessage(0)
     return 0
-
 
 def activateScreenShot():
     #hdc = win32gui.GetWindowDC(0)
@@ -78,4 +76,5 @@ def activateScreenShot():
     hm.MouseLeftDown = onMouseDown
     hm.MouseLeftUp = onMouseUp
     hm.HookMouse()
-    pythoncom.PumpMessages(0)
+    pythoncom.PumpMessages()
+    hm.UnhookMouse()
