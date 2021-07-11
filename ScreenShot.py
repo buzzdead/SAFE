@@ -8,8 +8,9 @@ import win32ui
 coords = []
 dc = win32gui.GetDC(0)
 dcObj = win32ui.CreateDCFromHandle(dc)
-hwnd = win32gui.WindowFromPoint((0,0))
+hwnd = win32gui.WindowFromPoint((0, 0))
 monitor = (0, 0, win32api.GetSystemMetrics(0), win32api.GetSystemMetrics(1))
+
 
 def saveScreenShot(x, y, width, height, path):
     # grab a handle to the main desktop window
@@ -47,21 +48,7 @@ def onMouseDown(event):
     coords.append(event.Position)
     return 0
 
-def onMouseMove(event):
-    if len(coords) > 0:
-        x, y = coords[0]
-        dx, dy = event.Position
-        win32gui.InvalidateRect(hwnd, monitor, True)  # Refresh the entire monitor
-        dcObj.DrawFocusRect((x, y, dx, dy))
-    return 1
-
-def onMouseUp(event):
-
-    print(event.Position)
-    hdc = win32gui.GetWindowDC(0)
-    x, y = coords[0]
-    dx, dy = event.Position
-
+def flipXY(x, y, dx, dy):
     # In the case of inverting the rectangle
     if dx < x:
         tmp_x = x
@@ -71,17 +58,36 @@ def onMouseUp(event):
         tmp_y = y
         y = dy
         dy = tmp_y
+    return x, y, dx, dy
 
-    #win32gui.DrawFocusRect(hdc, (x, y, dx, dy))
-    #win32gui.DeleteDC(hdc)
+def onMouseMove(event):
+    if len(coords) > 0:
+        x, y = coords[0]
+        dx, dy = event.Position
+        x, y, dx, dy = flipXY(x, y, dx, dy)
+        dcObj.DrawFocusRect((x, y, dx, dy))
+        win32gui.InvalidateRect(hwnd, monitor, True)  # Refresh the entire monitor
+    return 1
+
+
+def onMouseUp(event):
+    print(event.Position)
+    hdc = win32gui.GetWindowDC(0)
+    x, y = coords[0]
+    dx, dy = event.Position
+    x, y, dx, dy = flipXY(x, y, dx, dy)
+    # win32gui.DrawFocusRect(hdc, (x, y, dx, dy))
+    # win32gui.DeleteDC(hdc)
 
     # Subscribe the event to the callback
     saveScreenShot(x, y, dx - x, dy - y, "files/saved.png")
     win32api.PostQuitMessage(0)
-    return 0
+    return 1
+
 
 def activateScreenShot():
-    #hdc = win32gui.GetWindowDC(0)
+    coords.clear()
+    # hdc = win32gui.GetWindowDC(0)
     hm = pyWinhook.HookManager()
     hm.MouseLeftDown = onMouseDown
     hm.MouseLeftUp = onMouseUp
