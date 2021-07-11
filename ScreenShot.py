@@ -66,7 +66,7 @@ def onMouseUp(event):
     #win32gui.DeleteDC(hdc)
 
     # Subscribe the event to the callback
-    saveScreenShot(x, y, dx - x, dy - y, "saved.png")
+    saveScreenShot(x, y, dx - x, dy - y, "files/saved.png")
     win32api.PostQuitMessage(0)
     return 0
 
