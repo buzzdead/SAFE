@@ -82,12 +82,12 @@ def rsa_decrypt(encrypted_blob, private_key, passphrase):
 
 
 def get_rsa_keys():
-    if not os.path.exists('files/private_key.pem'):
+    if not os.path.exists('keys/private_key.pem'):
         create_rsa_key('12345')
-    priv_key = open("files/private_key.pem", "rb")
+    priv_key = open("keys/private_key.pem", "rb")
     private_key = priv_key.read()
     priv_key.close()
-    pub_key = open("files/public_key.pem", "rb")
+    pub_key = open("keys/public_key.pem", "rb")
     public_key = pub_key.read()
     pub_key.close()
     return public_key, private_key
@@ -102,11 +102,11 @@ def create_rsa_key(passphrase):
     # The public key in PEM Format
     public_key = new_key.publickey().exportKey("PEM")
 
-    fd = open("files/private_key.pem", "wb")
+    fd = open("keys/private_key.pem", "wb")
     fd.write(private_key)
     fd.close()
 
-    fd = open("files/public_key.pem", "wb")
+    fd = open("keys/public_key.pem", "wb")
     fd.write(public_key)
     fd.close()
 
@@ -120,8 +120,9 @@ def rsa_encrypt2(filename, public_key):
     return ctxt
 
 
-def rsa_decrypt2(ctxt, private_key):
+def rsa_decrypt2(ctxt, private_key, fileName):
     ptxt, file_extension = rsa_decrypt(ctxt, private_key, '12345')
-    new_ptxt_file = open("files/saved_new." + file_extension, "wb")
+    path = "files/" + fileName[0:len(fileName) -4] + "." + file_extension
+    new_ptxt_file = open(path, "wb")
     new_ptxt_file.write(ptxt)
 

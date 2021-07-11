@@ -32,10 +32,12 @@ def saveScreenShot(x, y, width, height, path):
     mem_dc.BitBlt((0, 0), (width, height), img_dc, (x, y), win32con.SRCCOPY)
 
     # save the bitmap to a file
+    print(path)
     screenshot.SaveBitmapFile(mem_dc, path)
     # free our objects
     mem_dc.DeleteDC()
     win32gui.DeleteObject(screenshot.GetHandle())
+
 
 
 # Callback function when the event is fired
@@ -48,6 +50,7 @@ def onMouseDown(event):
     coords.append(event.Position)
     return 0
 
+
 def flipXY(x, y, dx, dy):
     # In the case of inverting the rectangle
     if dx < x:
@@ -59,6 +62,7 @@ def flipXY(x, y, dx, dy):
         y = dy
         dy = tmp_y
     return x, y, dx, dy
+
 
 def onMouseMove(event):
     if len(coords) > 0:
