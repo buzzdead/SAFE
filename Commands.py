@@ -1,3 +1,4 @@
+import ntpath
 import os
 
 import RSA
@@ -12,8 +13,10 @@ def encrypt_file(fileName):
     fd.close()
     os.remove("files/saved.png")
 
+
 def take_screenshot():
     ScreenShot.activateScreenShot()
+
 
 def decrypt_file(fileName):
     pubkey, privkey = RSA.get_rsa_keys()
@@ -25,3 +28,8 @@ def decrypt_file(fileName):
 
 def generate_keys():
     RSA.create_rsa_key('12345')
+
+
+def path_leaf(path):
+    head, tail = ntpath.split(path)
+    return tail or ntpath.basename(head)
