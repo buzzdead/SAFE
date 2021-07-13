@@ -32,7 +32,6 @@ def saveScreenShot(x, y, width, height, path):
     mem_dc.BitBlt((0, 0), (width, height), img_dc, (x, y), win32con.SRCCOPY)
 
     # save the bitmap to a file
-    print(path)
     screenshot.SaveBitmapFile(mem_dc, path)
     # free our objects
     mem_dc.DeleteDC()
@@ -46,7 +45,6 @@ def onMouseDown(event):
     # [...]
 
     # Subscribe the event to the callback
-    print(event.Position)
     coords.append(event.Position)
     return 0
 
@@ -75,13 +73,9 @@ def onMouseMove(event):
 
 
 def onMouseUp(event):
-    print(event.Position)
-    hdc = win32gui.GetWindowDC(0)
     x, y = coords[0]
     dx, dy = event.Position
     x, y, dx, dy = flipXY(x, y, dx, dy)
-    # win32gui.DrawFocusRect(hdc, (x, y, dx, dy))
-    # win32gui.DeleteDC(hdc)
 
     # Subscribe the event to the callback
     saveScreenShot(x, y, dx - x, dy - y, "files/saved.png")
@@ -91,7 +85,6 @@ def onMouseUp(event):
 
 def activateScreenShot():
     coords.clear()
-    # hdc = win32gui.GetWindowDC(0)
     hm = pyWinhook.HookManager()
     hm.MouseLeftDown = onMouseDown
     hm.MouseLeftUp = onMouseUp
