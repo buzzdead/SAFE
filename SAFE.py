@@ -2,7 +2,6 @@ import fnmatch
 import os
 from tkinter import *
 from tkinter import filedialog, messagebox
-import pyperclip
 
 import Commands as cmd
 
@@ -34,14 +33,20 @@ class StorageList(object):
         self.master = master
         self.flist = fnmatch.filter(os.listdir('./encrypted_files'), '*.enc')
         self.optVariable = StringVar(master)
-        self.optVariable.set("   Select   ")  # default value
+        self.optVariable.set("Select secret")  # default value
         self.optFiles = OptionMenu(master, self.optVariable, *self.flist)
         self.optFiles.pack()
         self.optFiles.place(x=0, y=0)
 
-        self.b = Button(master, text="Store Password", command=self.store_pass).place(x=100, y=0)
-        self.rs = Button(self.master, text='Retrieve Secret', command=self.retrieveSecret,
-                         width=10, bg='brown', fg='white').place(x=0, y=40)
+        self.secretImage = PhotoImage(file='assets/clipboard.png').subsample(2, 2)
+        self.storeImage = PhotoImage(file='assets/store.png').subsample(2, 2)
+
+        self.b = Button(master, text="Store \n Password", image=self.storeImage,
+                        compound=LEFT, bg='red', fg='black', command=self.store_pass, width=85, height=30).place(x=115, y=0)
+
+        self.rs = Button(self.master, text=' Retrieve \n Secret', image=self.secretImage,
+                         compound=LEFT, command=self.retrieveSecret, width=75, height=30, bg='red', fg='black')
+        self.rs.place(x=220, y=0)
 
     def store_pass(self):
         strFile = self.optVariable.get()
@@ -51,21 +56,27 @@ class StorageList(object):
     def retrieveSecret(self):
         strFile = self.optVariable.get()
         rt = cmd.decrypt_file(strFile, False).decode('utf-8')
-        pyperclip.copy(rt)
-        spam = pyperclip.paste()
-        print(spam)
+        root.clipboard_clear()
+        root.clipboard_append(rt)
 
 
 class Buttons(object):
     def __init__(self, master):
         self.master = master
         self.button_dict = {}
-        self.option = {"Take Screenshot": self.take_screenshot,
-                       "Generate Keys": cmd.generate_keys, "Decrypt file": self.decrypt}
-
+        self.option = {"   Take \n   Screenshot": self.take_screenshot,
+                       "   Generate \n   Keys": cmd.generate_keys, "   Decrypt \n   file": self.decrypt}
+        self.images = {"   Take \n   Screenshot": PhotoImage(file='assets/image.png').subsample(2, 2),
+                       "   Generate \n   Keys": PhotoImage(file='assets/key.png').subsample(2, 2),
+                       "   Decrypt \n   file": PhotoImage(file='assets/decrypt.png').subsample(2, 2)}
+        abc = 0.75
         for i, k in self.option.items():
-            self.button_dict[i] = Button(self.master, text=i, command=k)
-            self.button_dict[i].pack()
+            self.button_dict[i] = Button(self.master, text=i, image=self.images[i],
+                                         compound=LEFT, command=k, bg="purple", fg="white", height=40, width=150)
+            self.button_dict[i].place(x = abc * 150 + abc * len(i), y = 200)
+
+            #self.button_dict[i].pack()
+            abc += 1
 
     def take_screenshot(self):
         self.master.withdraw()
@@ -97,6 +108,13 @@ class MainWindow(object):
 
 if __name__ == "__main__":
     root = Tk()
-    root.geometry("750x250")
+    root.title("Screen and File Encryption")
+    root.iconbitmap(r'assets/safe.ico')
+    root.geometry("750x450")
+    root.resizable(0, 0)
+    bg = PhotoImage(file="assets/bg.png").subsample(4, 4)
+
+    label1 = Label(root, image=bg)
+    label1.place(x=0, y=0)
     m = MainWindow(root)
     root.mainloop()

@@ -1,15 +1,13 @@
-import pyWinhook
 import pythoncom
 import win32api
 import win32con
 import win32gui
 import win32ui
+import pyWinhook
 
 coords = []
 dc = win32gui.GetDC(0)
 dcObj = win32ui.CreateDCFromHandle(dc)
-hwnd = win32gui.WindowFromPoint((0, 0))
-monitor = (0, 0, win32api.GetSystemMetrics(0), win32api.GetSystemMetrics(1))
 
 
 def saveScreenShot(x, y, width, height, path):
@@ -68,7 +66,11 @@ def onMouseMove(event):
         dx, dy = event.Position
         x, y, dx, dy = flipXY(x, y, dx, dy)
         dcObj.DrawFocusRect((x, y, dx, dy))
+        hwnd = win32gui.WindowFromPoint((x, y))
+        hwnd2 = win32gui.WindowFromPoint((dx, dy))
+        monitor = (x, y, dx, dy)
         win32gui.InvalidateRect(hwnd, monitor, True)  # Refresh the entire monitor
+        win32gui.InvalidateRect(hwnd2, monitor, True)  # Refresh the entire monitor
     return 1
 
 
