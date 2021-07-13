@@ -67,8 +67,10 @@ def onMouseMove(event):
         x, y, dx, dy = flipXY(x, y, dx, dy)
         dcObj.DrawFocusRect((x, y, dx, dy))
         hwnd = win32gui.WindowFromPoint((x, y))
+        hwnd2 = win32gui.WindowFromPoint((dx, dy))
         monitor = (x, y, dx, dy)
         win32gui.InvalidateRect(hwnd, monitor, True)  # Refresh the entire monitor
+        win32gui.InvalidateRect(hwnd2, monitor, True)  # Refresh the entire monitor
     return 1
 
 
