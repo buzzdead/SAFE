@@ -2,7 +2,6 @@ import fnmatch
 import os
 from tkinter import *
 from tkinter import filedialog, messagebox
-import pyperclip
 
 import Commands as cmd
 
@@ -57,9 +56,8 @@ class StorageList(object):
     def retrieveSecret(self):
         strFile = self.optVariable.get()
         rt = cmd.decrypt_file(strFile, False).decode('utf-8')
-        pyperclip.copy(rt)
-        spam = pyperclip.paste()
-        print(spam)
+        root.clipboard_clear()
+        root.clipboard_append(rt)
 
 
 class Buttons(object):
