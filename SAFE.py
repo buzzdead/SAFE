@@ -43,11 +43,11 @@ class StorageList(object):
         self.storeImage = PhotoImage(file='assets/store.png').subsample(2, 2)
 
         self.b = Button(master, text="Store \n Password", image=self.storeImage,
-                        compound=LEFT, bg='purple', fg='black', command=self.store_pass).place(x=115, y=0)
+                        compound=LEFT, bg='red', fg='black', command=self.store_pass, width=85, height=30).place(x=115, y=0)
 
         self.rs = Button(self.master, text=' Retrieve \n Secret', image=self.secretImage,
-                         compound=LEFT, command=self.retrieveSecret, width=75, height=30, bg='purple', fg='black')
-        self.rs.place(x=115, y=40)
+                         compound=LEFT, command=self.retrieveSecret, width=75, height=30, bg='red', fg='black')
+        self.rs.place(x=220, y=0)
 
     def store_pass(self):
         strFile = self.optVariable.get()
@@ -66,15 +66,15 @@ class Buttons(object):
     def __init__(self, master):
         self.master = master
         self.button_dict = {}
-        self.option = {"Take \n Screenshot": self.take_screenshot,
-                       "Generate \n Keys": cmd.generate_keys, "Decrypt \n file": self.decrypt}
-        self.images = {"Take \n Screenshot": PhotoImage(file='assets/image.png').subsample(3, 2),
-                       "Generate \n Keys": PhotoImage(file='assets/key.png').subsample(3, 2),
-                       "Decrypt \n file": PhotoImage(file='assets/decrypt.png').subsample(3, 2)}
-        abc = 0
+        self.option = {"   Take \n   Screenshot": self.take_screenshot,
+                       "   Generate \n   Keys": cmd.generate_keys, "   Decrypt \n   file": self.decrypt}
+        self.images = {"   Take \n   Screenshot": PhotoImage(file='assets/image.png').subsample(2, 2),
+                       "   Generate \n   Keys": PhotoImage(file='assets/key.png').subsample(2, 2),
+                       "   Decrypt \n   file": PhotoImage(file='assets/decrypt.png').subsample(2, 2)}
+        abc = 0.75
         for i, k in self.option.items():
             self.button_dict[i] = Button(self.master, text=i, image=self.images[i],
-                                         compound=LEFT, command=k, bg="purple", fg="white", height=40)
+                                         compound=LEFT, command=k, bg="purple", fg="white", height=40, width=150)
             self.button_dict[i].place(x = abc * 150 + abc * len(i), y = 200)
 
             #self.button_dict[i].pack()
@@ -106,9 +106,6 @@ class MainWindow(object):
         self.master = master
         self.storage = StorageList(self.master)
         self.buttons = Buttons(self.master)
-        self.photo = PhotoImage(file='assets/key.png').subsample(4, 4)
-        self.labelphoto = Label(self.master, image=self.photo)
-        self.labelphoto.place(x=420, y=32.5)
 
 
 if __name__ == "__main__":
