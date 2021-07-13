@@ -1,9 +1,8 @@
 import fnmatch
 import os
 from tkinter import *
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 import pyperclip
-
 
 import Commands as cmd
 
@@ -57,7 +56,6 @@ class StorageList(object):
         print(spam)
 
 
-
 class Buttons(object):
     def __init__(self, master):
         self.master = master
@@ -74,12 +72,19 @@ class Buttons(object):
         cmd.take_screenshot()
         self.master.update()
         self.master.deiconify()
-        path = filedialog.asksaveasfilename(defaultextension=".enc", filetypes=(("enc file", "*.enc"),))
-        cmd.encrypt_file('files/saved.png', path, True)
+        path = filedialog.asksaveasfilename \
+            (defaultextension=".enc", filetypes=(("enc file", "*.enc"),), initialdir='encrypted_files/')
+        if not path:
+            os.remove('files/saved.png')
+            return
+        remove_file = messagebox.askyesno("Alert", "Delete original picture?")
+        cmd.encrypt_file('files/saved.png', path, remove_file)
 
     def decrypt(self):
-        path = filedialog.askopenfile().name
-        filename = cmd.path_leaf(path)[0]
+        path = filedialog.askopenfile(initialdir='encrypted_files/')
+        if not path:
+            return
+        filename = cmd.path_leaf(path.name)[0]
         cmd.decrypt_file(filename, True)
 
 

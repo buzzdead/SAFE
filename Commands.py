@@ -13,13 +13,18 @@ def encrypt_file(in_file, out_file, remove_file):
 
     ext = path_leaf(in_file)[1]
     ciphertext = RSA.rsa_encrypt(plaintext, pubkey, ext)
-    print(ciphertext)
+
     ciphertext_file = open(out_file, 'wb')
     ciphertext_file.write(ciphertext)
     ciphertext_file.close()
 
-    if remove_file:
-        os.remove(in_file)
+    os.remove(in_file)
+    if not remove_file:
+        fn = path_leaf(path_leaf(out_file)[0])[3]
+        save_file = open('files/' + fn + '.' + 'png', 'wb')
+        save_file.write(plaintext)
+        save_file.close()
+
 
 
 def take_screenshot():
