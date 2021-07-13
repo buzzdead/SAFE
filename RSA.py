@@ -110,19 +110,3 @@ def create_rsa_key(passphrase):
     fd.write(public_key)
     fd.close()
 
-
-def rsa_encrypt2(filename, public_key):
-    extension = filename[filename.rfind('.') + 1:]
-
-    ptxt_file = open(filename, 'rb')
-    ctxt = rsa_encrypt(ptxt_file.read(), public_key, extension)
-    ptxt_file.close()
-    return ctxt
-
-
-def rsa_decrypt2(ctxt, private_key, fileName):
-    ptxt, file_extension = rsa_decrypt(ctxt, private_key, '12345')
-    path = "files/" + fileName[0:len(fileName) -4] + "." + file_extension
-    new_ptxt_file = open(path, "wb")
-    new_ptxt_file.write(ptxt)
-

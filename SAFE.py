@@ -2,6 +2,8 @@ import fnmatch
 import os
 from tkinter import *
 from tkinter import filedialog
+import pyperclip
+
 
 import Commands as cmd
 
@@ -10,20 +12,21 @@ class StorePass(object):
     def __init__(self, master, str_file):
         top = self.top = Toplevel(master)
         self.l = Label(top, text="Hello World")
+        self.file = str_file
         self.l.pack()
         self.e = Entry(top)
         self.e.pack()
         self.b = Button(top, text='Ok', command=self.cleanup)
         self.b.pack()
-        self.str_file = str_file
 
     def cleanup(self):
         value = self.e.get()
-        fd = open("files/secret_pass.txt", 'w')
-        fd.write(value)
-        cmd.encrypt_file(fd)
-        fd.close()
-        os.remove(fd)
+        temp_file = open("files/temp.txt", 'wb')
+        value = str(value).encode('utf-8')
+        temp_file.write(value)
+        temp_file.close()
+
+        cmd.encrypt_file('files/temp.txt', 'encrypted_files/' + self.file, True)
         self.top.destroy()
 
 
@@ -48,14 +51,19 @@ class StorageList(object):
 
     def retrieveSecret(self):
         strFile = self.optVariable.get()
-        cmd.decrypt_file(strFile)
+        rt = cmd.decrypt_file(strFile, False).decode('utf-8')
+        pyperclip.copy(rt)
+        spam = pyperclip.paste()
+        print(spam)
+
 
 
 class Buttons(object):
     def __init__(self, master):
         self.master = master
         self.button_dict = {}
-        self.option = {"Take Screenshot": self.take_screenshot, "Generate Keys": cmd.generate_keys}
+        self.option = {"Take Screenshot": self.take_screenshot,
+                       "Generate Keys": cmd.generate_keys, "Decrypt file": self.decrypt}
 
         for i, k in self.option.items():
             self.button_dict[i] = Button(self.master, text=i, command=k)
@@ -67,7 +75,12 @@ class Buttons(object):
         self.master.update()
         self.master.deiconify()
         path = filedialog.asksaveasfilename(defaultextension=".enc", filetypes=(("enc file", "*.enc"),))
-        cmd.encrypt_file(path)
+        cmd.encrypt_file('files/saved.png', path, True)
+
+    def decrypt(self):
+        path = filedialog.askopenfile().name
+        filename = cmd.path_leaf(path)[0]
+        cmd.decrypt_file(filename, True)
 
 
 class MainWindow(object):
