@@ -38,15 +38,16 @@ def saveScreenShot(x, y, width, height, path):
     win32gui.DeleteObject(screenshot.GetHandle())
 
 
+
 # Callback function when the event is fired
 def onMouseDown(event):
     # Here, the beginning of your rectangle drawing
     # [...]
 
     # Subscribe the event to the callback
-    print(event.Position)
     coords.append(event.Position)
     return 0
+
 
 def flipXY(x, y, dx, dy):
     # In the case of inverting the rectangle
@@ -60,6 +61,7 @@ def flipXY(x, y, dx, dy):
         dy = tmp_y
     return x, y, dx, dy
 
+
 def onMouseMove(event):
     if len(coords) > 0:
         x, y = coords[0]
@@ -71,13 +73,9 @@ def onMouseMove(event):
 
 
 def onMouseUp(event):
-    print(event.Position)
-    hdc = win32gui.GetWindowDC(0)
     x, y = coords[0]
     dx, dy = event.Position
     x, y, dx, dy = flipXY(x, y, dx, dy)
-    # win32gui.DrawFocusRect(hdc, (x, y, dx, dy))
-    # win32gui.DeleteDC(hdc)
 
     # Subscribe the event to the callback
     saveScreenShot(x, y, dx - x, dy - y, "files/saved.png")
@@ -87,7 +85,6 @@ def onMouseUp(event):
 
 def activateScreenShot():
     coords.clear()
-    # hdc = win32gui.GetWindowDC(0)
     hm = pyWinhook.HookManager()
     hm.MouseLeftDown = onMouseDown
     hm.MouseLeftUp = onMouseUp
