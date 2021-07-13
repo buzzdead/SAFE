@@ -8,3 +8,4 @@ Screen and file encryption
   just encrypting files in general.
   
 - Ultimately enable the program to be able to encrypt files that are decrypted by another user. (PKC)
+<a href="./assets/SAFE.zip" target="_top">Download Page</a>
