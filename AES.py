@@ -12,17 +12,27 @@ unpad = lambda s: s[:-ord(s[len(s) - 1:])]
 
 def encrypt(raw, password, ext):
     private_key = hashlib.sha256(password).digest()
+    hsh = hashlib.sha256(raw).digest()
+
     if ext != '.pem':
         raw += bytes(ext + str(len(ext)), 'utf-8')
+
     raw = pad(raw)
     iv = Random.new().read(AES.block_size)
     cipher = AES.new(private_key, AES.MODE_CBC, iv)
-    return base64.b64encode(iv + cipher.encrypt(raw))
+    raw = iv + cipher.encrypt(raw)
+    raw += b'hashcode' + hsh
+    return base64.b64encode(raw)
 
 
 def decrypt(enc, password):
     private_key = hashlib.sha256(password).digest()
     enc = base64.b64decode(enc)
+    pos = enc.find(b'hashcode')
+    hsh = enc[pos + len(b'hashcode'):]
+    enc = enc[0:pos]
+
     iv = enc[:16]
     cipher = AES.new(private_key, AES.MODE_CBC, iv)
-    return unpad(cipher.decrypt(enc[16:]))
+    raw = unpad(cipher.decrypt(enc[16:]))
+    return raw, hsh
