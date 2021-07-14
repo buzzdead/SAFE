@@ -1,18 +1,19 @@
 import ntpath
 import os
 
+import AES
 import RSA
+import SAFE
 import ScreenShot
 
 
 def encrypt_file(in_file, out_file, remove_file):
-    pubkey, privkey = RSA.get_rsa_keys()
     plaintext_file = open(in_file, 'rb')
     plaintext = plaintext_file.read()
     plaintext_file.close()
 
     ext = path_leaf(in_file)[1]
-    ciphertext = RSA.rsa_encrypt(plaintext, pubkey, ext)
+    ciphertext = AES.encrypt(plaintext, SAFE.rsa_key, ext)
 
     ciphertext_file = open(out_file, 'wb')
     ciphertext_file.write(ciphertext)
@@ -26,32 +27,53 @@ def encrypt_file(in_file, out_file, remove_file):
         save_file.close()
 
 
-
 def take_screenshot():
     ScreenShot.activateScreenShot()
 
 
 def decrypt_file(in_file, out_file):
-    pubkey, privkey = RSA.get_rsa_keys()
     fd = open("encrypted_files/" + in_file, "rb")
     ctxt = fd.read()
     fd.close()
 
-    plaintext, extension = RSA.rsa_decrypt(ctxt, privkey, '12345')
+    plaintext = AES.decrypt(ctxt, SAFE.rsa_key)
+    ext_length = plaintext[-1:]
+    ext = bytes.decode(ext_length, 'utf-8')
+    ext = bytes.decode(plaintext[-int(ext) - 1 : - 1], 'utf-8')
+
     if out_file:
         filename = path_leaf(in_file)[3]
-        plaintext_file = open('files/' + filename + '.' + extension, 'wb')
-        plaintext_file.write(plaintext)
+        plaintext_file = open('files/' + filename + ext, 'wb')
+        plaintext_file.write(plaintext[0:len(plaintext)-4])
         plaintext_file.close()
     else:
-        return plaintext
+        return plaintext[0:len(plaintext)-int(bytes.decode(ext_length, 'utf-8'))-1]
 
 
 def generate_keys():
-    RSA.create_rsa_key('12345')
+    RSA.create_rsa_key()
+    priv = open('keys/private_key.pem', 'rb')
+    priv_text = priv.read()
+    priv.close()
+    enc_key = AES.encrypt(priv_text, '12345'.encode('utf-8'), '.ext')
+    priv = open('keys/private_key.pem', 'wb')
+    priv.write(enc_key)
+    priv.close()
+    SAFE.rsa_key = activated('12345'.encode('utf-8'))
+    print(SAFE.rsa_key)
 
 
 def path_leaf(path):
     head, tail = ntpath.split(path)
     filename, file_extension = os.path.splitext(path)
     return tail or ntpath.basename(head), file_extension, head, filename
+
+
+def activated(password):
+    try:
+        fd = open('keys/private_key.pem', 'rb')
+        ctxt = fd.read()
+        rsa_key = AES.decrypt(ctxt, password)
+    except FileNotFoundError:
+        return False
+    return rsa_key
