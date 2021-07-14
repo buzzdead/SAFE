@@ -1,3 +1,4 @@
+import hashlib
 import ntpath
 import os
 
@@ -36,18 +37,23 @@ def decrypt_file(in_file, out_file):
     ctxt = fd.read()
     fd.close()
 
-    plaintext = AES.decrypt(ctxt, SAFE.rsa_key)
+    plaintext, hsh = AES.decrypt(ctxt, SAFE.rsa_key)
     ext_length = plaintext[-1:]
-    ext = bytes.decode(ext_length, 'utf-8')
-    ext = bytes.decode(plaintext[-int(ext) - 1 : - 1], 'utf-8')
+    ext_length = bytes.decode(ext_length, 'utf-8')
+    ext = bytes.decode(plaintext[-int(ext_length) - 1 : - 1], 'utf-8')
+    org_hash = hashlib.sha256(plaintext[0:len(plaintext) - int(ext_length) - 1]).digest()
+    if hsh != org_hash:
+        print("Returning now")
+    else:
+        print("Yohoo, integrity maintained")
 
     if out_file:
         filename = path_leaf(in_file)[3]
         plaintext_file = open('files/' + filename + ext, 'wb')
-        plaintext_file.write(plaintext[0:len(plaintext)-4])
+        plaintext_file.write(plaintext[0:len(plaintext) - int(ext_length) - 1])
         plaintext_file.close()
     else:
-        return plaintext[0:len(plaintext)-int(bytes.decode(ext_length, 'utf-8'))-1]
+        return plaintext[0:len(plaintext) - int(ext_length) - 1]
 
 
 def generate_keys():
@@ -60,7 +66,6 @@ def generate_keys():
     priv.write(enc_key)
     priv.close()
     SAFE.rsa_key = activated('12345'.encode('utf-8'))
-    print(SAFE.rsa_key)
 
 
 def path_leaf(path):
@@ -73,7 +78,7 @@ def activated(password):
     try:
         fd = open('keys/private_key.pem', 'rb')
         ctxt = fd.read()
-        rsa_key = AES.decrypt(ctxt, password)
+        rsa_key, hsh = AES.decrypt(ctxt, password)
     except FileNotFoundError:
         return False
     return rsa_key
