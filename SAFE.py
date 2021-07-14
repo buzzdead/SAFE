@@ -3,7 +3,11 @@ import os
 from tkinter import *
 from tkinter import filedialog, messagebox
 
+import SAFE
+
 import Commands as cmd
+
+global rsa_key
 
 
 class StorePass(object):
@@ -42,7 +46,8 @@ class StorageList(object):
         self.storeImage = PhotoImage(file='assets/store.png').subsample(2, 2)
 
         self.b = Button(master, text="Store \n Password", image=self.storeImage,
-                        compound=LEFT, bg='red', fg='black', command=self.store_pass, width=85, height=30).place(x=115, y=0)
+                        compound=LEFT, bg='red', fg='black', command=self.store_pass, width=85, height=30).place(x=115,
+                                                                                                                 y=0)
 
         self.rs = Button(self.master, text=' Retrieve \n Secret', image=self.secretImage,
                          compound=LEFT, command=self.retrieveSecret, width=75, height=30, bg='red', fg='black')
@@ -73,9 +78,9 @@ class Buttons(object):
         for i, k in self.option.items():
             self.button_dict[i] = Button(self.master, text=i, image=self.images[i],
                                          compound=LEFT, command=k, bg="purple", fg="white", height=40, width=150)
-            self.button_dict[i].place(x = abc * 150 + abc * len(i), y = 200)
+            self.button_dict[i].place(x=abc * 150 + abc * len(i), y=200)
 
-            #self.button_dict[i].pack()
+            # self.button_dict[i].pack()
             abc += 1
 
     def take_screenshot(self):
@@ -113,8 +118,10 @@ if __name__ == "__main__":
     root.geometry("750x450")
     root.resizable(0, 0)
     bg = PhotoImage(file="assets/bg.png").subsample(4, 4)
-
     label1 = Label(root, image=bg)
     label1.place(x=0, y=0)
     m = MainWindow(root)
+    key = cmd.activated('12345'.encode('utf-8'))
+    if key:
+        SAFE.rsa_key = key
     root.mainloop()
