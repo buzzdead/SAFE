@@ -9,3 +9,4 @@ Screen and file encryption
   
 - Ultimately enable the program to be able to encrypt files that are decrypted by another user. (PKC)
 - Can try it here: <a href="./assets/SAFE.zip" target="_top">Download Page</a>
+  To get started, generate key and then store a secret to the existing secret.enc, or add new secret files.
