@@ -40,7 +40,7 @@ def decrypt_file(in_file, out_file):
     plaintext, hsh = AES.decrypt(ctxt, SAFE.rsa_key)
     ext_length = plaintext[-1:]
     ext_length = bytes.decode(ext_length, 'utf-8')
-    ext = bytes.decode(plaintext[-int(ext_length) - 1 : - 1], 'utf-8')
+    ext = bytes.decode(plaintext[-int(ext_length) - 1: - 1], 'utf-8')
     org_hash = hashlib.sha256(plaintext[0:len(plaintext) - int(ext_length) - 1]).digest()
     if hsh != org_hash:
         print("Returning now")
