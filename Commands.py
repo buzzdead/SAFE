@@ -61,7 +61,7 @@ def generate_keys():
     priv = open('keys/private_key.pem', 'wb')
     priv.write(enc_key)
     priv.close()
-    SAFE.rsa_key = activated(SAFE.rsa_key)
+    SAFE.rsa_key = activated(SAFE.rsa_key)[0]
 
 
 def path_leaf(path):
