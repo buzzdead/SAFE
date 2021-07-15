@@ -1,12 +1,9 @@
 # SAFE
-Screen and file encryption
-- A program to take screenshots that are stored in an encrypted format.
+Screen and file encryption.
 - Takes use of a resident key owned by the user of the application, which
   can be used to get the screenshots at a later time.
 
-- The plan is to make this program viable for easy-to-get secure passwords, or
-  just encrypting files in general.
+- A program for storing passwords in an encrypted format, that can encrypt & decrypt files, take encrypted screenshots
+  and with the potential to encrypt your files with another users public key, and then the other user can decrypt it.
   
-- Ultimately enable the program to be able to encrypt files that are decrypted by another user. (PKC)
 - Can try it here: <a href="./assets/SAFE.zip" target="_top">Download Page</a>
-  To get started, generate key and then store a secret to the existing secret.enc, or add new secret files.
