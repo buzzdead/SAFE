@@ -27,7 +27,7 @@ class PromptPass:
 
     def cleanup(self):
         value = self.e.get()
-        if os.path.exists('files/private_key.pem'):
+        if os.path.exists('keys/private_key.pem'):
             SAFE.rsa_key, activated = cmd.activated(value.encode('utf-8'))
             if not activated:
                 SAFE.rsakey = value
@@ -191,11 +191,13 @@ class Buttons(object):
         if not path:
             return
         pathname = path.name
+        abc = cmd.path_leaf(cmd.path_leaf(pathname)[0])[3]
+        print(abc)
         path.close()
         if not path:
             return
-        remove_file = messagebox.askyesno("Alert", "Delete original picture?")
-        cmd.encrypt_file(pathname, 'encrypted_files/new_encrypted.enc', remove_file)
+        remove_file = messagebox.askyesno("Alert", "Delete original file?")
+        cmd.encrypt_file(pathname, 'encrypted_files/' + abc + '.enc', remove_file)
 
 
 class MainWindow(object):
