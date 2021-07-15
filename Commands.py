@@ -20,12 +20,8 @@ def encrypt_file(in_file, out_file, remove_file):
     ciphertext_file.write(ciphertext)
     ciphertext_file.close()
 
-    os.remove(in_file)
-    if not remove_file:
-        fn = path_leaf(path_leaf(out_file)[0])[3]
-        save_file = open('files/' + fn + '.' + 'png', 'wb')
-        save_file.write(plaintext)
-        save_file.close()
+    if remove_file or in_file == 'files/saved.png':
+        os.remove(in_file)
 
 
 def take_screenshot():
@@ -61,11 +57,11 @@ def generate_keys():
     priv = open('keys/private_key.pem', 'rb')
     priv_text = priv.read()
     priv.close()
-    enc_key = AES.encrypt(priv_text, '12345'.encode('utf-8'), '.ext')
+    enc_key = AES.encrypt(priv_text, SAFE.rsa_key, '.pem')
     priv = open('keys/private_key.pem', 'wb')
     priv.write(enc_key)
     priv.close()
-    SAFE.rsa_key = activated('12345'.encode('utf-8'))
+    SAFE.rsa_key = activated(SAFE.rsa_key)
 
 
 def path_leaf(path):
@@ -79,6 +75,12 @@ def activated(password):
         fd = open('keys/private_key.pem', 'rb')
         ctxt = fd.read()
         rsa_key, hsh = AES.decrypt(ctxt, password)
+        hsh2 = hashlib.sha256(rsa_key).digest()
+        valid_key = hsh2 == hsh
+        if not valid_key:
+            print("Woops, its the wrong key")
+        else:
+            print("Screen and file encryption activated")
     except FileNotFoundError:
         return False
-    return rsa_key
+    return rsa_key, valid_key
