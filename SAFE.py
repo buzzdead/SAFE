@@ -1,5 +1,6 @@
 import fnmatch
 import os
+import sys
 from tkinter import *
 from tkinter import filedialog, messagebox
 
@@ -8,6 +9,37 @@ import SAFE
 import Commands as cmd
 
 global rsa_key
+
+
+class PromptPass:
+    def __init__(self, master):
+        top = self.top = Toplevel(master)
+        top.resizable(0, 0)
+        top.geometry(master.geometry())
+        top.protocol("WM_DELETE_WINDOW", master.destroy)
+        self.master = master
+        self.l = Label(top, text="Enter Master Password")
+        self.l.pack()
+        self.e = Entry(top)
+        self.e.pack()
+        self.b = Button(top, text='Ok', command=self.cleanup)
+        self.b.pack()
+
+    def cleanup(self):
+        value = self.e.get()
+        if os.path.exists('keys/private_key.pem'):
+            SAFE.rsa_key, activated = cmd.activated(value.encode('utf-8'))
+            if not activated:
+                SAFE.rsakey = value
+                self.top.destroy()
+                PromptPass(self.master)
+        else:
+            SAFE.rsa_key = value.encode('utf-8')
+            cmd.generate_keys()
+            activated = True
+        if activated:
+            root.wm_attributes("-disabled", False)
+        self.top.destroy()
 
 
 class StorePass(object):
@@ -138,11 +170,10 @@ class Buttons(object):
         if not path:
             os.remove('files/saved.png')
             return
-        remove_file = messagebox.askyesno("Alert", "Delete original picture?")
         fn = cmd.path_leaf(path)[0]
         self.storage.optFiles["menu"].add_command(
             label=fn, command=lambda st=path: self.storage.optVariable.set(fn))
-        cmd.encrypt_file('files/saved.png', path, remove_file)
+        cmd.encrypt_file('files/saved.png', path, True)
 
     def decrypt(self):
         path = filedialog.askopenfile(initialdir='encrypted_files/')
@@ -157,7 +188,8 @@ class Buttons(object):
         path.close()
         if not path:
             return
-        cmd.encrypt_file(pathname, 'encrypted_files/new_encrypted.enc', True)
+        remove_file = messagebox.askyesno("Alert", "Delete original picture?")
+        cmd.encrypt_file(pathname, 'encrypted_files/new_encrypted.enc', remove_file)
 
 
 class MainWindow(object):
@@ -177,7 +209,8 @@ if __name__ == "__main__":
     label1 = Label(root, image=bg)
     label1.place(x=-2, y=-2)
     m = MainWindow(root)
-    key = cmd.activated('12345'.encode('utf-8'))
-    if key:
-        SAFE.rsa_key = key
+    root.wm_attributes("-disabled", True)
+    w = PromptPass(root)
+
+    root.lift()
     root.mainloop()
