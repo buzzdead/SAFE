@@ -27,16 +27,17 @@ class PromptPass:
 
     def cleanup(self):
         value = self.e.get()
-        if os.path.exists('keys/private_key.pem'):
+        if os.path.exists('files/private_key.pem'):
             SAFE.rsa_key, activated = cmd.activated(value.encode('utf-8'))
             if not activated:
                 SAFE.rsakey = value
                 self.top.destroy()
                 PromptPass(self.master)
+
         else:
+            activated = True
             SAFE.rsa_key = value.encode('utf-8')
             cmd.generate_keys()
-            activated = True
         if activated:
             root.wm_attributes("-disabled", False)
         self.top.destroy()
@@ -148,7 +149,7 @@ class Buttons(object):
                          font='Helvetica 12 bold', height=35, width=150).place(x=296, y=270)
         self.option = {"   Take \n   Screenshot": self.take_screenshot,
                        "   Decrypt \n   file": self.decrypt,
-                       "   Generate \n   Keys": cmd.generate_keys}
+                       "   Generate \n   Keys": self.generate_keys}
         self.images = {"   Take \n   Screenshot": PhotoImage(file='assets/image.png').subsample(2, 2),
                        "   Generate \n   Keys": PhotoImage(file='assets/key.png').subsample(2, 2),
                        "   Decrypt \n   file": PhotoImage(file='assets/decrypt.png').subsample(2, 2)}
@@ -159,6 +160,9 @@ class Buttons(object):
                                          font='Helvetica 12 bold', height=35, width=150)
             self.button_dict[i].place(x=abc * 150 + abc * len(i), y=330)
             abc += 1
+
+    def generate_keys(self):
+        PromptPass(self.master)
 
     def take_screenshot(self):
         self.master.withdraw()
@@ -184,6 +188,8 @@ class Buttons(object):
 
     def encrypt(self):
         path = filedialog.askopenfile(initialdir='files/')
+        if not path:
+            return
         pathname = path.name
         path.close()
         if not path:
@@ -209,8 +215,9 @@ if __name__ == "__main__":
     label1 = Label(root, image=bg)
     label1.place(x=-2, y=-2)
     m = MainWindow(root)
-    root.wm_attributes("-disabled", True)
-    w = PromptPass(root)
+    if os.path.exists('keys/private_key.pem'):
+        root.wm_attributes("-disabled", True)
+        w = PromptPass(root)
 
     root.lift()
     root.mainloop()
