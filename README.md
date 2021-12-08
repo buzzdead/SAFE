@@ -1,4 +1,11 @@
 # SAFE
+Have to create a files folder and a keys folder (i think) when cloning. Will be fixed later.
+To use it, simply start it, generate keys and enter a master password. Then you can store a secret in the dropdownmenu's
+"secret.enc" option, or add more secrets (for exmaple a facebook password etc) and store passwords in each of the options in the menu.
+To retrieve it simply choose which one you want to retrieve, and click retrieve secret which copies it to clipboard and you can paste it out.
+The screenshot function is still in progress as it was a little difficult to adjust it to multiple screens.
+Other than that you can encrypt any type of file and decrypt it at a later time.
+
 Screen and file encryption.
 - Takes use of a resident key owned by the user of the application, which
   can be used to get the encrypted files at a later time.
